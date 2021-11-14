@@ -1,6 +1,4 @@
-class Encoding
-  ASCII_8BIT.replicate("IROHA")
-end
+Encoding::ASCII_8BIT.replicate("IROHA")
 
 class String
   def encode(encoding, from_encoding = __ENCODING__, options = nil)
