@@ -4,9 +4,9 @@ class String
   def encode(encoding, from_encoding = __ENCODING__, options = nil)
 
     # TODO: from も
-    if encoding.class.name == 'String'
+    if encoding.class == String
       to_enc = Encoding.find(encoding)
-    elsif encoding.class.name == 'Encoding'
+    elsif encoding.class == Encoding
       to_enc = encoding
     else
       raise ArgumentError
