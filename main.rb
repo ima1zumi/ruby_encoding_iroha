@@ -2,7 +2,23 @@ Encoding::ASCII_8BIT.replicate("IROHA")
 
 class String
   prepend Module.new {
-    def encode(encoding, from_encoding = __ENCODING__, options = nil)
+    UNICODE =
+      [
+        Encoding::UTF_16,
+        Encoding::UTF_16BE,
+        Encoding::UTF_16LE,
+        Encoding::UTF_32,
+        Encoding::UTF_32BE,
+        Encoding::UTF_32LE,
+        Encoding::UTF_7,
+        Encoding::UTF_8,
+        Encoding::UTF8_DOCOMO,
+        Encoding::UTF8_KDDI,
+        Encoding::UTF8_MAC,
+        Encoding::UTF8_SOFTBANK,
+      ]
+
+    def encode(encoding, from_encoding = __ENCODING__, **options)
 
       to_enc = convert_encoding_constant(encoding)
       from_enc = convert_encoding_constant(from_encoding)
@@ -28,39 +44,16 @@ class String
       end
     end
 
-    # options 非対応
     def to_iroha(encoding, from_encoding)
-      #     raise Encoding::ConverterNotFoundError unless unicode.include?(from_encoding)
+      raise Encoding::ConverterNotFoundError unless UNICODE.include?(from_encoding)
 
-      self.each_grapheme_cluster.map { |char|
-        utf8_to_iroha(char)
-      }.join.force_encoding(encoding)
+      self.each_grapheme_cluster.map { |char| utf8_to_iroha(char) }.join.force_encoding(encoding)
     end
 
-    # options 非対応
     def from_iroha(encoding, from_encoding)
-      #     raise Encoding::ConverterNotFoundError unless unicode.include?(encoding)
+      raise Encoding::ConverterNotFoundError unless UNICODE.include?(encoding)
 
-      self.each_byte.map { |char|
-        iroha_to_utf8(char)
-      }.join.force_encoding(encoding)
-    end
-
-    def unicode
-      [
-        Encoding::UTF_16,
-        Encoding::UTF_16BE,
-        Encoding::UTF_16LE,
-        Encoding::UTF_32,
-        Encoding::UTF_32BE,
-        Encoding::UTF_32LE,
-        Encoding::UTF_7,
-        Encoding::UTF_8,
-        Encoding::UTF8_DOCOMO,
-        Encoding::UTF8_KDDI,
-        Encoding::UTF8_MAC,
-        Encoding::UTF8_SOFTBANK,
-      ]
+      self.each_char.map { |char| iroha_to_utf8(char) }.join.encode(encoding)
     end
 
     def utf8_to_iroha(char)
@@ -169,103 +162,103 @@ class String
     end
 
     def iroha_to_utf8(char)
-      case char
-      when "\x80"
+      case char.b
+      when "\x80".b
         "い"
-      when "\x81"
+      when "\x81".b
         "ろ"
-      when "\x82"
+      when "\x82".b
         "は"
-      when "\x83"
+      when "\x83".b
         "に"
-      when "\x84"
+      when "\x84".b
         "ほ"
-      when "\x85"
+      when "\x85".b
         "へ"
-      when "\x86"
+      when "\x86".b
         "と"
-      when "\x87"
+      when "\x87".b
         "ち"
-      when "\x88"
+      when "\x88".b
         "り"
-      when "\x89"
+      when "\x89".b
         "ぬ"
-      when "\x8A"
+      when "\x8A".b
         "る"
-      when "\x8B"
+      when "\x8B".b
         "を"
-      when "\x8C"
+      when "\x8C".b
         "わ"
-      when "\x8D"
+      when "\x8D".b
         "か"
-      when "\x8E"
+      when "\x8E".b
         "よ"
-      when "\x8F"
+      when "\x8F".b
         "た"
-      when "\x90"
+      when "\x90".b
         "れ"
-      when "\x91"
+      when "\x91".b
         "そ"
-      when "\x92"
+      when "\x92".b
         "つ"
-      when "\x93"
+      when "\x93".b
         "ね"
-      when "\x94"
+      when "\x94".b
         "な"
-      when "\x95"
+      when "\x95".b
         "ら"
-      when "\x96"
+      when "\x96".b
         "む"
-      when "\x97"
+      when "\x97".b
         "う"
-      when "\x98"
+      when "\x98".b
         "ゐ"
-      when "\x99"
+      when "\x99".b
         "の"
-      when "\x9A"
+      when "\x9A".b
         "お"
-      when "\x9B"
+      when "\x9B".b
         "く"
-      when "\x9C"
+      when "\x9C".b
         "や"
-      when "\x9D"
+      when "\x9D".b
         "ま"
-      when "\x9E"
+      when "\x9E".b
         "け"
-      when "\x9F"
+      when "\x9F".b
         "ふ"
-      when "\xA0"
+      when "\xA0".b
         "こ"
-      when "\xA1"
+      when "\xA1".b
         "え"
-      when "\xA2"
+      when "\xA2".b
         "て"
-      when "\xA3"
+      when "\xA3".b
         "あ"
-      when "\xA4"
+      when "\xA4".b
         "さ"
-      when "\xA5"
+      when "\xA5".b
         "き"
-      when "\xA6"
+      when "\xA6".b
         "ゆ"
-      when "\xA7"
+      when "\xA7".b
         "め"
-      when "\xA8"
+      when "\xA8".b
         "み"
-      when "\xA9"
+      when "\xA9".b
         "し"
-      when "\xAA"
+      when "\xAA".b
         "え"
-      when "\xAB"
+      when "\xAB".b
         "ひ"
-      when "\xAC"
+      when "\xAC".b
         "も"
-      when "\xAD"
+      when "\xAD".b
         "せ"
-      when "\xAE"
+      when "\xAE".b
         "す"
       else
-        if char # FIXME
+        if char.ascii_only?
           char
         else
           raise Encoding::UndefinedConversionError
@@ -281,6 +274,7 @@ pp str.encoding
 pp 'a'.encode(Encoding::IROHA)
 pp 'a'.encode('IROHA')
 # pp 'ば'.encode(Encoding::IROHA) #error
-i = 'い'.encode(Encoding::IROHA)
-pp i
+i = 'aい'.encode(Encoding::IROHA)
+pp "iroha: #{i}"
 pp i.encode(Encoding::UTF_8, Encoding::IROHA)
+pp 'a'.encode(Encoding::US_ASCII) # FIXME
