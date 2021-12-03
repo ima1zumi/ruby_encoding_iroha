@@ -40,14 +40,14 @@ class String
       elsif encoding.is_a?(Encoding)
         encoding
       else
-#         raise ArgumentError
+        raise ArgumentError
       end
     end
 
     def to_iroha(encoding, from_encoding)
       raise Encoding::ConverterNotFoundError unless UNICODE.include?(from_encoding)
 
-      self.each_grapheme_cluster.map { |char| utf8_to_iroha(char) }.join.force_encoding(encoding)
+      self.each_grapheme_cluster.map { |char| utf8_to_iroha(char.encode(Encoding::UTF_8)) }.join.force_encoding(encoding)
     end
 
     def from_iroha(encoding, from_encoding)
@@ -275,6 +275,5 @@ pp 'a'.encode(Encoding::IROHA)
 pp 'a'.encode('IROHA')
 # pp 'ば'.encode(Encoding::IROHA) #error
 i = 'aい'.encode(Encoding::IROHA)
-pp "iroha: #{i}"
 pp i.encode(Encoding::UTF_8, Encoding::IROHA)
-pp 'a'.encode(Encoding::US_ASCII) # FIXME
+pp 'a'.encode(Encoding::US_ASCII)
