@@ -1,24 +1,28 @@
+# frozen_string_literal: true
+
+require_relative "ruby_encoding_iroha/version"
+
 Encoding::ASCII_8BIT.replicate("IROHA")
 
 class String
   prepend Module.new {
     UNICODE =
-      [
-        Encoding::UTF_16,
-        Encoding::UTF_16BE,
-        Encoding::UTF_16LE,
-        Encoding::UTF_32,
-        Encoding::UTF_32BE,
-        Encoding::UTF_32LE,
-        Encoding::UTF_7,
-        Encoding::UTF_8,
-        Encoding::UTF8_DOCOMO,
-        Encoding::UTF8_KDDI,
-        Encoding::UTF8_MAC,
-        Encoding::UTF8_SOFTBANK,
-      ]
+    [
+      Encoding::UTF_16,
+      Encoding::UTF_16BE,
+      Encoding::UTF_16LE,
+      Encoding::UTF_32,
+      Encoding::UTF_32BE,
+      Encoding::UTF_32LE,
+      Encoding::UTF_7,
+      Encoding::UTF_8,
+      Encoding::UTF8_DOCOMO,
+      Encoding::UTF8_KDDI,
+      Encoding::UTF8_MAC,
+      Encoding::UTF8_SOFTBANK,
+    ]
 
-    def encode(encoding, from_encoding = __ENCODING__, **options)
+    def encode(encoding, from_encoding = self.encoding, **options)
 
       to_enc = convert_encoding_constant(encoding)
       from_enc = convert_encoding_constant(from_encoding)
@@ -267,13 +271,3 @@ class String
     end
   }
 end
-
-str = 'い'.encode(Encoding::IROHA)
-pp str
-pp str.encoding
-pp 'a'.encode(Encoding::IROHA)
-pp 'a'.encode('IROHA')
-# pp 'ば'.encode(Encoding::IROHA) #error
-i = 'aい'.encode(Encoding::IROHA)
-pp i.encode(Encoding::UTF_8, Encoding::IROHA)
-pp 'a'.encode(Encoding::US_ASCII)
